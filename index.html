@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Field Day — GovCon Intelligence for Small Primes</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=JetBrains+Mono:wght@300;400;500&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+:root{
+  --ink:#0c0e0f;
+  --ink2:#2d3238;
+  --ink3:#5a6170;
+  --ink4:#9aa0ad;
+  --paper:#f9f8f6;
+  --paper2:#f2f0ec;
+  --paper3:#e8e5e0;
+  --rule:#dedad4;
+  --rule2:#ece9e4;
+  --green:#4a7c3f;
+  --green-lt:#dcf0d8;
+  --green-dim:#f0f9ee;
+  --amber:#92400e;
+  --red:#9b1c1c;
+  --max:1160px;
+  --serif:'Cormorant Garamond',Georgia,serif;
+  --mono:'JetBrains Mono',monospace;
+  --sans:'IBM Plex Sans',system-ui,sans-serif;
+}
+body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:17px;line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+
+/* ── UTILITY ── */
+.container{max-width:var(--max);margin:0 auto;padding:0 40px}
+@media(max-width:700px){.container{padding:0 20px}}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+@keyframes ticker{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.reveal{opacity:0;transform:translateY(20px);transition:opacity .65s ease,transform .65s ease}
+.reveal.visible{opacity:1;transform:none}
+.reveal-d1{transition-delay:.1s}
+.reveal-d2{transition-delay:.2s}
+.reveal-d3{transition-delay:.3s}
+
+/* ── NAV ── */
+nav{position:sticky;top:0;z-index:200;background:rgba(249,248,246,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--rule);padding:0 40px}
+.nav-inner{max-width:var(--max);margin:0 auto;height:60px;display:flex;align-items:center;justify-content:space-between}
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+.nav-logo-mark{font-family:var(--serif);font-size:20px;font-style:italic;color:var(--ink);font-weight:600;letter-spacing:-.01em}
+.nav-logo-badge{font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--green);background:var(--green-dim);border:1px solid var(--green-lt);padding:2px 7px;border-radius:3px}
+.nav-links{display:flex;align-items:center;gap:28px}
+.nav-link{font-size:13px;font-weight:500;color:var(--ink3);text-decoration:none;transition:color .15s;letter-spacing:.01em}
+.nav-link:hover{color:var(--ink)}
+.nav-cta{background:var(--ink);color:var(--paper);font-size:13px;font-weight:600;padding:9px 20px;border-radius:5px;text-decoration:none;transition:all .15s;letter-spacing:.01em}
+.nav-cta:hover{background:var(--green)}
+@media(max-width:700px){.nav-links{display:none}nav{padding:0 20px}}
+
+/* ── TICKER ── */
+.ticker{background:var(--ink);overflow:hidden;height:34px;display:flex;align-items:center}
+.ticker-track{display:flex;animation:ticker 50s linear infinite;white-space:nowrap}
+.ticker-item{font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;color:rgba(249,248,246,.35);padding:0 32px;display:flex;align-items:center;gap:10px}
+.ticker-item strong{color:#8fc940;font-weight:500}
+.ticker-sep{width:3px;height:3px;background:rgba(249,248,246,.15);border-radius:50%;flex-shrink:0}
+
+/* ── HERO ── */
+.hero{padding:80px 0 0;border-bottom:1px solid var(--rule);overflow:hidden}
+.hero-inner{max-width:var(--max);margin:0 auto;padding:0 40px 56px;display:grid;grid-template-columns:1fr 420px;gap:64px;align-items:end}
+.hero-tag{font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--green);margin-bottom:18px;display:flex;align-items:center;gap:10px}
+.hero-tag::before{content:'';display:inline-block;width:20px;height:1px;background:var(--green)}
+h1{font-family:var(--serif);font-size:clamp(40px,5.5vw,64px);line-height:1.08;color:var(--ink);letter-spacing:-.03em;margin-bottom:22px}
+h1 em{font-style:italic;color:var(--green)}
+.hero-sub{font-size:19px;color:var(--ink3);line-height:1.75;max-width:540px;margin-bottom:36px;font-weight:300}
+.hero-actions{display:flex;align-items:center;gap:16px;margin-bottom:56px}
+.btn-primary{display:inline-flex;align-items:center;gap:8px;background:var(--ink);color:var(--paper);font-size:14px;font-weight:600;padding:13px 26px;border-radius:5px;text-decoration:none;transition:all .2s;letter-spacing:.01em}
+.btn-primary:hover{background:var(--green);transform:translateY(-1px)}
+.btn-secondary{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:500;color:var(--ink3);text-decoration:none;padding:13px 0;border-bottom:1px solid var(--rule);transition:all .2s;letter-spacing:.01em}
+.btn-secondary:hover{color:var(--ink);border-color:var(--ink3)}
+.hero-proof{display:flex;gap:0;border-top:1px solid var(--rule)}
+.hp-item{flex:1;padding:18px 20px;border-right:1px solid var(--rule)}
+.hp-item:last-child{border-right:none}
+.hp-item:first-child{padding-left:0}
+.hp-val{font-family:var(--sans);font-size:26px;font-weight:700;color:var(--ink);line-height:1;margin-bottom:4px;letter-spacing:-.02em}
+.hp-val span{color:var(--ink)}
+.hp-label{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink4)}
+
+/* ── HERO MOCK APP ── */
+.hero-mock{background:#fff;border-radius:10px 10px 0 0;overflow:hidden;box-shadow:0 -4px 32px rgba(12,14,15,.08),0 20px 48px rgba(12,14,15,.07);border:1px solid #e8e5e0;border-bottom:none;margin-bottom:56px}
+.mock-bar{background:#f9f8f6;padding:10px 16px;display:flex;align-items:center;gap:6px;border-bottom:1px solid #e8e5e0}
+.mock-dot{width:9px;height:9px;border-radius:50%}
+.mock-bar-title{font-family:var(--mono);font-size:10px;color:#9aa0ad;margin-left:6px;letter-spacing:.04em}
+.mock-bar-right{display:flex;align-items:center;gap:8px;margin-left:auto}
+.mock-bar-live{display:flex;align-items:center;gap:5px;font-family:var(--mono);font-size:9px;color:#4a7c3f;background:#f0f9ee;border:1px solid #dcf0d8;padding:2px 8px;border-radius:3px}
+.mock-live-dot{width:5px;height:5px;border-radius:50%;background:#4a7c3f;animation:livePulse 2s ease infinite}
+@keyframes livePulse{0%,100%{opacity:1}50%{opacity:.35}}
+.mock-stats{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid #e8e5e0;background:#f9f8f6}
+.mock-stat{padding:8px 10px;border-right:1px solid #e8e5e0;text-align:center}
+.mock-stat:last-child{border-right:none}
+.mock-stat-val{font-family:var(--mono);font-size:12px;font-weight:500;color:#0c0e0f}
+.mock-stat-val.green{color:#4a7c3f}
+.mock-stat-val.red{color:#9b1c1c}
+.mock-stat-lbl{font-family:var(--mono);font-size:7.5px;color:#9aa0ad;text-transform:uppercase;letter-spacing:.05em;margin-top:2px}
+.mock-opp{padding:13px 15px;border-bottom:1px solid #f2f0ec;background:#fff}
+.mock-opp:last-of-type{border-bottom:none}
+.mock-opp-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:4px}
+.mock-opp-title{font-size:12.5px;color:#0c0e0f;line-height:1.4;flex:1;font-family:var(--sans);font-weight:500}
+.mock-opp-val{font-family:var(--serif);font-size:15px;font-style:italic;color:#4a7c3f;white-space:nowrap;flex-shrink:0;font-weight:600}
+.mock-opp-meta{display:flex;gap:10px;margin-bottom:7px;flex-wrap:wrap}
+.mock-opp-meta span{font-family:var(--mono);font-size:8.5px;color:#9aa0ad}
+.mock-opp-meta em{color:#5a6170;font-style:normal}
+.mock-opp-meta .urg{color:#9b1c1c;font-weight:600}
+.mock-bdgs{display:flex;gap:4px;margin-bottom:8px;flex-wrap:wrap}
+.mock-bdg{font-family:var(--mono);font-size:8px;letter-spacing:.04em;padding:2px 6px;border-radius:3px;border:1px solid}
+.bdg-sol{background:#f0f4ff;color:#3b5bdb;border-color:#c5d0fa}
+.bdg-ss{background:#fff8e1;color:#92400e;border-color:#fcd34d}
+.bdg-pre{background:#f3f0ff;color:#5f3dc4;border-color:#d0bfff}
+.bdg-sdvosb{background:#f0f9ee;color:#2f6627;border-color:#b2dfaa}
+.bdg-sb{background:#fff7ed;color:#92400e;border-color:#fbbf7c}
+.bdg-urg{background:#fff5f5;color:#9b1c1c;border-color:#fca5a5}
+.mock-fit{display:flex;align-items:center;gap:7px;margin-bottom:8px}
+.mock-fit-lbl{font-family:var(--mono);font-size:7.5px;color:#9aa0ad;text-transform:uppercase;letter-spacing:.07em;white-space:nowrap;width:52px}
+.mock-fit-bar{flex:1;height:3px;background:#f2f0ec;border-radius:2px}
+.mock-fit-fill{height:100%;border-radius:2px}
+.mock-fit-pct{font-family:var(--mono);font-size:10px;font-weight:600;width:30px;text-align:right}
+.mock-actions{display:flex;gap:5px}
+.mock-act{font-family:var(--mono);font-size:8px;padding:3px 7px;border-radius:3px;border:1px solid #e8e5e0;color:#9aa0ad;background:#f9f8f6}
+.mock-act.a-active{border-color:#b2dfaa;color:#2f6627;background:#f0f9ee}
+.mock-act.a-contact{border-color:#fcd34d;color:#92400e;background:#fff8e1}
+.mock-act.a-pipeline{border-color:#dedad4;color:#5a6170;background:#f9f8f6}
+.mock-foot{background:#f9f8f6;padding:7px 15px;display:flex;justify-content:space-between;align-items:center;border-top:1px solid #e8e5e0}
+.mock-foot span{font-family:var(--mono);font-size:8.5px;color:#9aa0ad}
+.mock-export{background:#f0f9ee;color:#4a7c3f;border:1px solid #dcf0d8;border-radius:3px;padding:3px 9px;font-family:var(--mono);font-size:8.5px;font-weight:600}
+
+/* ── DATA STRIP ── */
+.data-strip{background:var(--ink);padding:0 40px;border-top:1px solid rgba(255,255,255,.06)}
+.data-strip-inner{max-width:var(--max);margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:0}
+.ds-item{padding:52px 40px;border-right:1px solid rgba(255,255,255,.07);display:flex;flex-direction:column;gap:0}
+.ds-item:first-child{padding-left:0}
+.ds-item:last-child{border-right:none;padding-right:0}
+.ds-num{font-family:var(--sans);font-size:52px;font-weight:600;color:#fff;line-height:1;letter-spacing:-.03em;margin-bottom:14px}
+.ds-num sup{font-size:28px;font-weight:600;vertical-align:super;letter-spacing:0}
+.ds-title{font-size:14px;font-weight:600;color:rgba(249,248,246,.85);margin-bottom:6px;letter-spacing:-.01em;line-height:1.3}
+.ds-label{font-family:var(--mono);font-size:11px;letter-spacing:.04em;color:rgba(249,248,246,.35);line-height:1.7}
+@media(max-width:900px){
+  .data-strip-inner{grid-template-columns:1fr 1fr}
+  .ds-item{padding:40px 0;border-right:none;border-bottom:1px solid rgba(255,255,255,.07)}
+  .ds-item:nth-child(odd){padding-right:32px}
+  .ds-item:nth-child(even){padding-left:32px;border-left:1px solid rgba(255,255,255,.07)}
+  .ds-item:nth-last-child(-n+2){border-bottom:none}
+  .data-strip{padding:0 20px}
+}
+
+/* ── SECTIONS ── */
+section{border-bottom:1px solid var(--rule)}
+.section-inner{max-width:var(--max);margin:0 auto;padding:88px 40px}
+.section-tag{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--green);margin-bottom:14px;display:flex;align-items:center;gap:10px}
+.section-tag::before{content:'';display:inline-block;width:16px;height:1px;background:var(--green)}
+.section-h2{font-family:var(--serif);font-size:clamp(28px,3.8vw,44px);line-height:1.15;letter-spacing:-.025em;color:var(--ink);margin-bottom:16px}
+.section-body{font-size:18px;color:var(--ink3);line-height:1.85;max-width:580px;font-weight:300}
+@media(max-width:700px){.section-inner{padding:60px 20px}.hero-inner{grid-template-columns:1fr;gap:40px}.hero-mock{display:none}}
+
+/* ── PROBLEM / SOLUTION ── */
+.ps-grid{display:grid;grid-template-columns:1fr 1fr;gap:72px;align-items:start}
+.ps-col-label{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink2);font-weight:500;margin-bottom:18px;padding-bottom:12px;border-bottom:2px solid var(--ink)}
+.ps-item{padding:20px 0;border-bottom:1px solid var(--rule2);display:flex;gap:16px}
+.ps-item:last-child{border-bottom:none}
+.ps-num{font-family:var(--mono);font-size:11px;color:var(--ink3);flex-shrink:0;margin-top:3px;font-weight:500}
+.ps-text{font-size:15px;color:var(--ink2);line-height:1.75}
+.ps-text strong{color:var(--ink);font-weight:600;display:block;margin-bottom:4px;font-size:13.5px;letter-spacing:-.01em}
+.sol-item{padding:20px 0;border-bottom:1px solid var(--rule2);display:flex;gap:14px}
+.sol-item:last-child{border-bottom:none}
+.sol-icon{width:28px;height:28px;background:var(--green-dim);border:1px solid var(--green-lt);border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;font-size:12px}
+.sol-text{font-size:15px;color:var(--ink2);line-height:1.75}
+.sol-text strong{color:var(--ink);font-weight:600;display:block;margin-bottom:4px;font-size:13.5px;letter-spacing:-.01em}
+@media(max-width:900px){.ps-grid{grid-template-columns:1fr;gap:40px}}
+
+/* ── FEATURES ── */
+.features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--rule);border:1px solid var(--rule)}
+.feat{background:var(--paper);padding:34px 30px}
+.feat-num{font-family:var(--mono);font-size:10px;color:var(--ink3);letter-spacing:.08em;margin-bottom:12px;font-weight:500}
+.feat-title{font-family:var(--sans);font-size:20px;font-weight:700;color:var(--ink);margin-bottom:10px;line-height:1.2;letter-spacing:-.02em}
+.feat-body{font-size:15px;color:var(--ink3);line-height:1.75;font-weight:300}
+.feat-tag{display:inline-flex;margin-top:16px;font-family:var(--mono);font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink);background:var(--paper3);border:1px solid var(--rule);padding:4px 10px;border-radius:3px;font-weight:500}
+@media(max-width:900px){.features-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.features-grid{grid-template-columns:1fr}}
+
+/* ── WHO IT'S FOR ── */
+.who-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.who-card{background:var(--paper2);border:1px solid var(--rule);border-radius:5px;padding:28px}
+.who-type{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--green);margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--rule)}
+.who-title{font-family:var(--sans);font-size:18px;font-weight:700;color:var(--ink);margin-bottom:10px;line-height:1.25;letter-spacing:-.02em}
+.who-body{font-size:15px;color:var(--ink3);line-height:1.75;margin-bottom:16px;font-weight:300}
+.who-points{list-style:none}
+.who-points li{font-family:var(--mono);font-size:11.5px;color:var(--ink2);padding:6px 0;border-bottom:1px solid var(--rule2);display:flex;gap:8px;line-height:1.5}
+.who-points li:last-child{border-bottom:none}
+.who-points li::before{content:'→';color:var(--green);flex-shrink:0}
+@media(max-width:900px){.who-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.who-grid{grid-template-columns:1fr}}
+
+/* ── INTELLIGENCE / EDITORIAL ── */
+.intel-section{background:var(--paper)}
+.intel-header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:40px}
+.intel-see-all{font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--green);text-decoration:none;text-transform:uppercase}
+.intel-see-all:hover{text-decoration:underline;text-underline-offset:3px}
+.intel-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:1px;background:var(--rule);border:1px solid var(--rule)}
+.intel-card{background:var(--paper);padding:30px 28px;display:flex;flex-direction:column}
+.intel-card.featured{background:var(--paper2)}
+.intel-category{font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--green);margin-bottom:12px}
+.intel-title{font-family:var(--sans);font-size:clamp(15px,1.8vw,19px);font-weight:700;line-height:1.25;color:var(--ink);margin-bottom:10px;letter-spacing:-.02em}
+.intel-title.featured{font-size:clamp(19px,2.2vw,26px)}
+.intel-excerpt{font-size:15px;color:var(--ink3);line-height:1.75;font-weight:300;flex:1;margin-bottom:16px}
+.intel-meta{font-family:var(--mono);font-size:10px;color:var(--ink4);display:flex;justify-content:space-between;padding-top:14px;border-top:1px solid var(--rule)}
+.intel-read{font-family:var(--mono);font-size:10.5px;color:var(--green);text-decoration:none;margin-top:16px;display:inline-flex;align-items:center;gap:6px}
+.intel-read:hover{text-decoration:underline;text-underline-offset:3px}
+.intel-newsletter{display:flex;flex-direction:column;justify-content:space-between}
+.intel-form{display:flex;flex-direction:column;gap:8px;margin-top:auto}
+.intel-input{background:var(--paper3);border:1px solid var(--rule);border-radius:4px;padding:10px 12px;font-family:var(--sans);font-size:13px;color:var(--ink);outline:none;transition:border-color .15s}
+.intel-input:focus{border-color:var(--green)}
+.intel-input::placeholder{color:var(--ink4)}
+.intel-subscribe{background:var(--ink);color:var(--paper);border:none;border-radius:4px;padding:10px 16px;font-family:var(--sans);font-size:13px;font-weight:600;cursor:pointer;transition:background .15s}
+.intel-subscribe:hover{background:var(--green)}
+.intel-disclaimer{font-family:var(--mono);font-size:9.5px;color:var(--ink4);margin-top:8px;line-height:1.5}
+@media(max-width:900px){.intel-grid{grid-template-columns:1fr}}
+
+/* ── TESTIMONIALS ── */
+.testimonials-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--rule);border:1px solid var(--rule)}
+.testimonial{background:var(--paper);padding:36px 32px;display:flex;flex-direction:column;justify-content:space-between}
+.testimonial.alt{background:var(--paper2)}
+.testi-mark{font-family:var(--serif);font-size:48px;color:var(--green);line-height:.8;margin-bottom:14px;font-weight:700}
+.testi-quote{font-family:var(--sans);font-size:17px;font-weight:500;color:var(--ink);line-height:1.7;margin-bottom:24px;letter-spacing:-.01em}
+.testi-author{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink3);padding-top:16px;border-top:2px solid var(--rule);line-height:1.8}
+@media(max-width:900px){.testimonials-grid{grid-template-columns:1fr}}
+
+/* ── DATA TABLE ── */
+.market-table{width:100%;border-collapse:collapse;margin-top:32px}
+.market-table th{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);padding:10px 16px;text-align:left;border-bottom:2px solid var(--ink);font-weight:500;border-top:2px solid var(--ink)}
+.market-table td{font-size:15px;padding:13px 16px;border-bottom:1px solid var(--rule2);color:var(--ink2);vertical-align:top}
+.market-table tr:last-child td{border-bottom:none}
+.market-table .td-num{font-family:var(--sans);font-size:20px;font-weight:700;color:var(--ink);letter-spacing:-.02em}
+.market-table .td-label{font-weight:600;color:var(--ink)}
+
+/* ── PRICING ── */
+.pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--rule);border:1px solid var(--rule)}
+.pricing-card{background:var(--paper);padding:34px 30px}
+.pricing-card.featured{background:var(--ink)}
+.pricing-tier{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:16px}
+.pricing-card:not(.featured) .pricing-tier{color:var(--ink3)}
+.pricing-card.featured .pricing-tier{color:#8fc940}
+.pricing-price{font-family:var(--sans);font-size:44px;font-weight:700;line-height:1;margin-bottom:4px;letter-spacing:-.03em}
+.pricing-card:not(.featured) .pricing-price{color:var(--ink)}
+.pricing-card.featured .pricing-price{color:var(--paper)}
+.pricing-per{font-family:var(--mono);font-size:10px;margin-bottom:20px}
+.pricing-card:not(.featured) .pricing-per{color:var(--ink3)}
+.pricing-card.featured .pricing-per{color:rgba(249,248,246,.4)}
+.pricing-divider{height:1px;margin-bottom:20px}
+.pricing-card:not(.featured) .pricing-divider{background:var(--rule)}
+.pricing-card.featured .pricing-divider{background:rgba(255,255,255,.1)}
+.pricing-features{list-style:none}
+.pricing-features li{font-family:var(--mono);font-size:11.5px;padding:7px 0;border-bottom:1px solid;display:flex;gap:8px;align-items:flex-start;line-height:1.5}
+.pricing-card:not(.featured) .pricing-features li{color:var(--ink3);border-color:var(--rule2)}
+.pricing-card.featured .pricing-features li{color:rgba(249,248,246,.65);border-color:rgba(255,255,255,.07)}
+.pricing-features li::before{content:'·';flex-shrink:0}
+.pricing-card:not(.featured) .pricing-features li::before{color:var(--green)}
+.pricing-card.featured .pricing-features li::before{color:#8fc940}
+.pricing-features li:last-child{border-bottom:none}
+.pricing-cta{display:block;text-align:center;margin-top:26px;padding:11px;border-radius:4px;font-family:var(--mono);font-size:11.5px;letter-spacing:.05em;text-decoration:none;transition:all .15s}
+.pricing-card:not(.featured) .pricing-cta{background:transparent;border:1px solid var(--rule2);color:var(--ink3)}
+.pricing-card:not(.featured) .pricing-cta:hover{border-color:var(--ink3);color:var(--ink)}
+.pricing-card.featured .pricing-cta{background:#8fc940;color:var(--ink);font-weight:700}
+.pricing-card.featured .pricing-cta:hover{background:var(--paper)}
+@media(max-width:900px){.pricing-grid{grid-template-columns:1fr}}
+
+/* ── CTA ── */
+.cta-section{background:var(--ink);border-bottom:none}
+.cta-inner{max-width:var(--max);margin:0 auto;padding:88px 40px;display:grid;grid-template-columns:1fr auto;gap:60px;align-items:center}
+.cta-h2{font-family:var(--serif);font-size:clamp(32px,4vw,50px);font-style:italic;color:var(--paper);line-height:1.2;letter-spacing:-.025em;margin-bottom:14px}
+.cta-h2 span{color:#8fc940}
+.cta-body{font-size:15px;color:rgba(249,248,246,.5);line-height:1.8;max-width:480px;font-weight:300}
+.cta-right{display:flex;flex-direction:column;gap:12px;align-items:flex-end;flex-shrink:0}
+.cta-btn{display:inline-flex;align-items:center;gap:8px;background:#8fc940;color:var(--ink);font-size:14px;font-weight:700;padding:14px 30px;border-radius:5px;text-decoration:none;transition:all .2s;white-space:nowrap;letter-spacing:.01em}
+.cta-btn:hover{background:var(--paper);transform:translateY(-2px)}
+.cta-note{font-family:var(--mono);font-size:10px;color:rgba(249,248,246,.25);letter-spacing:.06em;text-align:right}
+@media(max-width:900px){.cta-inner{grid-template-columns:1fr;gap:32px}.cta-right{align-items:flex-start}}
+@media(max-width:700px){.cta-inner{padding:60px 20px}}
+
+/* ── FOOTER ── */
+footer{background:var(--ink);border-top:1px solid rgba(255,255,255,.06);padding:40px}
+.footer-inner{max-width:var(--max);margin:0 auto;display:flex;justify-content:space-between;align-items:center}
+.footer-logo{font-family:var(--serif);font-size:17px;font-style:italic;color:rgba(249,248,246,.45)}
+.footer-links{display:flex;gap:24px}
+.footer-link{font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:rgba(249,248,246,.2);text-decoration:none;transition:color .15s}
+.footer-link:hover{color:rgba(249,248,246,.5)}
+.footer-copy{font-family:var(--mono);font-size:9px;color:rgba(249,248,246,.15);letter-spacing:.06em}
+@media(max-width:700px){footer{padding:32px 20px}.footer-inner{flex-direction:column;gap:20px;text-align:center}.footer-links{flex-wrap:wrap;justify-content:center}}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a href="#" class="nav-logo">
+      <span class="nav-logo-mark">Field Day</span>
+      <span class="nav-logo-badge">Beta</span>
+    </a>
+    <div class="nav-links">
+      <a href="#how-it-works" class="nav-link">How it works</a>
+      <a href="#intelligence" class="nav-link">Intelligence</a>
+      <a href="#pricing" class="nav-link">Pricing</a>
+      <a href="field-day-app.html?demo=true" class="nav-cta">See it live →</a>
+    </div>
+  </div>
+</nav>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="ticker-track">
+    <span class="ticker-item"><span class="ticker-sep"></span>DoD FY2026 budget <strong>$849B</strong> — largest in history</span>
+    <span class="ticker-item"><span class="ticker-sep"></span>SAM.gov <strong>847+ new solicitations</strong> posted this week</span>
+    <span class="ticker-item"><span class="ticker-sep"></span>8(a) set-aside market <strong>$26B+ annually</strong></span>
+    <span class="ticker-item"><span class="ticker-sep"></span>Average GovCon BD tool: <strong>$600/mo</strong> for data that's weeks old</span>
+    <span class="ticker-item"><span class="ticker-sep"></span><strong>~250,000</strong> active vendors competing on SAM.gov</span>
+    <span class="ticker-item"><span class="ticker-sep"></span>SBIR Phase II averaging <strong>$1.8M</strong> per award</span>
+    <span class="ticker-item"><span class="ticker-sep"></span>DoD FY2026 budget <strong>$849B</strong> — largest in history</span>
+    <span class="ticker-item"><span class="ticker-sep"></span>SAM.gov <strong>847+ new solicitations</strong> posted this week</span>
+    <span class="ticker-item"><span class="ticker-sep"></span>8(a) set-aside market <strong>$26B+ annually</strong></span>
+    <span class="ticker-item"><span class="ticker-sep"></span>Average GovCon BD tool: <strong>$600/mo</strong> for data that's weeks old</span>
+    <span class="ticker-item"><span class="ticker-sep"></span><strong>~250,000</strong> active vendors competing on SAM.gov</span>
+    <span class="ticker-item"><span class="ticker-sep"></span>SBIR Phase II averaging <strong>$1.8M</strong> per award</span>
+  </div>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-left" style="animation:fadeUp .5s ease both">
+      <div class="hero-tag">GovCon Intelligence</div>
+      <h1>Small primes keep showing up second.<br><em>Not because they're less capable.</em></h1>
+      <p class="hero-sub">Because they don't have the infrastructure to show up first. Field Day is that infrastructure — the BD team that runs 24 hours a day, never misses a Sources Sought, and has your Monday morning briefing ready before you open your laptop.</p>
+      <div class="hero-actions">
+        <a href="field-day-app.html?demo=true" class="btn-primary">See it working in 60 seconds →</a>
+        <a href="#how-it-works" class="btn-secondary">How it works</a>
+      </div>
+      <div class="hero-proof">
+        <div class="hp-item"><div class="hp-val">$<span>849</span>B</div><div class="hp-label">FY2026 Defense Budget</div></div>
+        <div class="hp-item"><div class="hp-val"><span>250</span>K</div><div class="hp-label">Vendors on SAM.gov</div></div>
+        <div class="hp-item"><div class="hp-val"><span>48</span>hr</div><div class="hp-label">Avg Discovery Lag</div></div>
+      </div>
+    </div>
+
+    <!-- MOCK APP — mirrors actual product light-mode UI -->
+    <div class="hero-mock" style="animation:fadeUp .5s ease .15s both">
+      <div class="mock-bar">
+        <div class="mock-dot" style="background:#ff5f57"></div>
+        <div class="mock-dot" style="background:#febc2e;margin-left:4px"></div>
+        <div class="mock-dot" style="background:#28c840;margin-left:4px"></div>
+        <span class="mock-bar-title">Apex Defense Solutions — Opportunity Feed</span>
+        <div class="mock-bar-right">
+          <div class="mock-bar-live"><div class="mock-live-dot"></div>SAM.gov live</div>
+        </div>
+      </div>
+      <div class="mock-stats">
+        <div class="mock-stat"><div class="mock-stat-val green">7</div><div class="mock-stat-lbl">Opportunities</div></div>
+        <div class="mock-stat"><div class="mock-stat-val">5</div><div class="mock-stat-lbl">Defense / DoD</div></div>
+        <div class="mock-stat"><div class="mock-stat-val green">4</div><div class="mock-stat-lbl">High Match</div></div>
+        <div class="mock-stat"><div class="mock-stat-val red">2</div><div class="mock-stat-lbl">Closing Soon</div></div>
+      </div>
+      <div class="mock-opp">
+        <div class="mock-opp-top">
+          <div class="mock-opp-title">Next Gen ISR Platform — Edge Computing &amp; AI Integration</div>
+          <div class="mock-opp-val">$8.4M</div>
+        </div>
+        <div class="mock-opp-meta">
+          <span>Agency: <em>Dept of the Army</em></span>
+          <span>Deadline: <em class="urg">⚡ 4 days left</em></span>
+        </div>
+        <div class="mock-bdgs">
+          <span class="mock-bdg bdg-sol">Solicitation</span>
+          <span class="mock-bdg bdg-sdvosb">SDVOSB</span>
+          <span class="mock-bdg bdg-urg">Urgent</span>
+        </div>
+        <div class="mock-fit">
+          <span class="mock-fit-lbl">Profile Fit</span>
+          <div class="mock-fit-bar"><div class="mock-fit-fill" style="width:91%;background:#4a7c3f"></div></div>
+          <span class="mock-fit-pct" style="color:#4a7c3f">91%</span>
+        </div>
+        <div class="mock-actions">
+          <span class="mock-act a-active">● Active</span>
+          <span class="mock-act">★ Saved</span>
+          <span class="mock-act a-pipeline">⬡ Pursuing</span>
+        </div>
+      </div>
+      <div class="mock-opp">
+        <div class="mock-opp-top">
+          <div class="mock-opp-title">Autonomous Ground Vehicle C2 Software — Sources Sought</div>
+          <div class="mock-opp-val">$3.1M</div>
+        </div>
+        <div class="mock-opp-meta">
+          <span>Agency: <em>DARPA · TTO</em></span>
+          <span>Deadline: <em>18 days left</em></span>
+        </div>
+        <div class="mock-bdgs">
+          <span class="mock-bdg bdg-ss">Sources Sought</span>
+          <span class="mock-bdg bdg-sdvosb">SDVOSB</span>
+        </div>
+        <div class="mock-fit">
+          <span class="mock-fit-lbl">Profile Fit</span>
+          <div class="mock-fit-bar"><div class="mock-fit-fill" style="width:78%;background:#4a7c3f"></div></div>
+          <span class="mock-fit-pct" style="color:#4a7c3f">78%</span>
+        </div>
+        <div class="mock-actions">
+          <span class="mock-act a-contact">◑ Contact</span>
+          <span class="mock-act">☆ Save</span>
+          <span class="mock-act">⬡ + Pipeline</span>
+        </div>
+      </div>
+      <div class="mock-opp" style="background:#fafaf9">
+        <div class="mock-opp-top">
+          <div class="mock-opp-title">Cybersecurity Ops Center Support — INDOPACOM</div>
+          <div class="mock-opp-val">$14.2M</div>
+        </div>
+        <div class="mock-opp-meta">
+          <span>Agency: <em>US Indo-Pacific Command</em></span>
+          <span>Deadline: <em>22 days left</em></span>
+        </div>
+        <div class="mock-bdgs">
+          <span class="mock-bdg bdg-pre">Pre-Solicitation</span>
+          <span class="mock-bdg bdg-sb">Small Business</span>
+        </div>
+        <div class="mock-fit">
+          <span class="mock-fit-lbl">Profile Fit</span>
+          <div class="mock-fit-bar"><div class="mock-fit-fill" style="width:62%;background:#d97706"></div></div>
+          <span class="mock-fit-pct" style="color:#d97706">62%</span>
+        </div>
+        <div class="mock-actions">
+          <span class="mock-act">○ Relationship</span>
+          <span class="mock-act">☆ Save</span>
+          <span class="mock-act">⬡ + Pipeline</span>
+        </div>
+      </div>
+      <div class="mock-foot">
+        <span>7 opportunities · last 60 days</span>
+        <span class="mock-export">↗ Weekly Brief</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DATA STRIP -->
+<div class="data-strip">
+  <div class="data-strip-inner">
+    <div class="ds-item reveal">
+      <div class="ds-num">$49<sup>B</sup></div>
+      <div class="ds-title">Defense tech VC funding in 2025</div>
+      <div class="ds-label">Record high — up 80% year-over-year.<br>Capital is flowing. Competition is intensifying.</div>
+    </div>
+    <div class="ds-item reveal reveal-d1">
+      <div class="ds-num">629</div>
+      <div class="ds-title">Defense VC transactions in 2024</div>
+      <div class="ds-label">Up from 414 in 2020.<br>New entrants are competing for the same contracts you are.</div>
+    </div>
+    <div class="ds-item reveal reveal-d2">
+      <div class="ds-num">$2.7<sup>T</sup></div>
+      <div class="ds-title">Global defense spending in 2024</div>
+      <div class="ds-label">Steepest rise since the Cold War.<br>The market is growing faster than procurement can keep up.</div>
+    </div>
+    <div class="ds-item reveal reveal-d3">
+      <div class="ds-num">48<sup>hr</sup></div>
+      <div class="ds-title">Avg discovery lag for small primes</div>
+      <div class="ds-label">By the time you find it, the incumbent<br>already has a head start. Field Day closes that gap.</div>
+    </div>
+  </div>
+</div>
+
+<!-- PROBLEM / SOLUTION -->
+<section id="how-it-works">
+  <div class="section-inner">
+    <div class="section-tag reveal">The Problem</div>
+    <h2 class="section-h2 reveal">The problem is timing.<br>And timing is an infrastructure problem.</h2>
+    <p class="section-body reveal" style="margin-bottom:52px">You already know which contracts you should be winning. The NAICS codes match, the set-aside is right, the agency is in your lane. The large prime down the road has a BD person who's been having lunch with that program manager for six months. They were in the room when the requirement was written. They responded to the Sources Sought before you knew it existed. By the time it hit SAM.gov, the competition was already over. You found out when the email alert fired.</p>
+    <div class="ps-grid">
+      <div class="reveal">
+        <div class="ps-col-label">How it works today</div>
+        <div class="ps-item"><span class="ps-num">01</span><div class="ps-text"><strong>You find out when everyone else does</strong>By the time an opportunity hits SAM.gov, incumbents have been shaping the requirement for months. You're not late — you never had a chance to be early.</div></div>
+        <div class="ps-item"><span class="ps-num">02</span><div class="ps-text"><strong>BD lives in a spreadsheet nobody trusts</strong>Your pipeline is split across someone's inbox, a shared Google Sheet three weeks out of date, and a Monday meeting that spends 20 minutes figuring out what's even being tracked.</div></div>
+        <div class="ps-item"><span class="ps-num">03</span><div class="ps-text"><strong>Existing tools weren't built for you</strong>GovSearch costs $600/month and was designed for a large prime with a 15-person BD team. It's not just expensive — it's the wrong product entirely.</div></div>
+        <div class="ps-item"><span class="ps-num">04</span><div class="ps-text"><strong>Your set-aside status isn't enough alone</strong>Being 8(a) or SDVOSB is an advantage — but only if you're in the room early enough to use it. Most set-aside opportunities go to whoever positioned first.</div></div>
+      </div>
+      <div class="reveal reveal-d1">
+        <div class="ps-col-label">How Field Day changes it</div>
+        <div class="sol-item"><div class="sol-icon">◈</div><div class="sol-text"><strong>Know what's coming before it's posted</strong>Sources Sought notices, expiring contracts, and budget signals — surfaced and scored against your profile weeks before a solicitation exists. You stop reacting and start positioning.</div></div>
+        <div class="sol-item"><div class="sol-icon">◉</div><div class="sol-text"><strong>Plain-English pursuit assessment</strong>Every opportunity comes with a written assessment — where you're strong, where the gaps are, what to do before you invest a single proposal hour. Not a score. An answer.</div></div>
+        <div class="sol-item"><div class="sol-icon">◎</div><div class="sol-text"><strong>Priced for a 5-person company</strong>Free to start. $499/month for the full platform. No enterprise procurement process, no 12-month commitment, no sales call required.</div></div>
+        <div class="sol-item"><div class="sol-icon">◇</div><div class="sol-text"><strong>Your set-aside status works automatically</strong>Tell Field Day your status once. Every 8(a), SDVOSB, or HUBZone opportunity that matches your profile rises to the top — flagged, scored, deadline-tracked.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PLATFORM FEATURES -->
+<section>
+  <div class="section-inner" style="padding-bottom:0">
+    <div class="section-tag reveal">Platform</div>
+    <h2 class="section-h2 reveal" style="margin-bottom:36px">The intelligence infrastructure<br>large primes take for granted.</h2>
+  </div>
+  <div class="features-grid" style="margin:0">
+    <div class="feat reveal">
+      <div class="feat-num">01 — Live Feed</div>
+      <div class="feat-title">Opportunity Intelligence</div>
+      <p class="feat-body">Live solicitations, pre-solicitations, and Sources Sought from SAM.gov — automatically filtered and scored against your company. Your relevant opportunities, ranked, always at the top.</p>
+      <span class="feat-tag">SAM.gov API</span>
+    </div>
+    <div class="feat reveal reveal-d1">
+      <div class="feat-num">02 — Assessment</div>
+      <div class="feat-title">How You Measure Up</div>
+      <p class="feat-body">Field Day reads the full opportunity description against your profile and writes a plain-English pursuit assessment. Where you're strong. What the gaps are. What to do first. Not a number — a decision.</p>
+      <span class="feat-tag">AI Analysis</span>
+    </div>
+    <div class="feat reveal reveal-d2">
+      <div class="feat-num">03 — Signals</div>
+      <div class="feat-title">Relationship Intelligence</div>
+      <p class="feat-body">No algorithm knows whether you have a contact at a program office. You do. Flag it. High profile fit + active relationship = the highest-priority pursuit on your board. The intel no API can provide.</p>
+      <span class="feat-tag">Human Signal</span>
+    </div>
+    <div class="feat reveal">
+      <div class="feat-num">04 — Pipeline</div>
+      <div class="feat-title">Replace the Spreadsheet</div>
+      <p class="feat-body">Move pursuits through Watching → Qualifying → Pursuing → Proposal → Won. See total pipeline value, urgent deadlines, stage distribution. The BD tool your team will actually open on Monday morning.</p>
+      <span class="feat-tag">Pipeline Tracker</span>
+    </div>
+    <div class="feat reveal reveal-d1">
+      <div class="feat-num">05 — Awards</div>
+      <div class="feat-title">Know Who's Winning</div>
+      <p class="feat-body">See exactly which companies are winning DoD contracts, at what value, through which vehicles. Understand the incumbents in your lanes before you decide whether to compete — or who to team with.</p>
+      <span class="feat-tag">USASpending API</span>
+    </div>
+    <div class="feat reveal reveal-d2">
+      <div class="feat-num">06 — Reporting</div>
+      <div class="feat-title">Your Weekly Brief</div>
+      <p class="feat-body">One click generates a formal, printable intelligence report — top opportunities ranked by fit, pipeline snapshot, imminent deadlines. Something you'd hand to a program manager or forward on Sunday night.</p>
+      <span class="feat-tag">Export</span>
+    </div>
+  </div>
+</section>
+
+<!-- WHO IT'S FOR -->
+<section>
+  <div class="section-inner">
+    <div class="section-tag reveal">Who it's for</div>
+    <h2 class="section-h2 reveal" style="margin-bottom:12px">If this is your week, Field Day was built for you.</h2>
+    <p class="section-body reveal" style="margin-bottom:44px">You're already competitive. You have the certifications, the past performance, the team. What you don't have is someone whose entire job is to know what's coming before it hits SAM.gov. Field Day is that person.</p>
+    <div class="who-grid">
+      <div class="who-card reveal">
+        <div class="who-type">Capture Manager</div>
+        <div class="who-title">Doing BD at a $5M–$50M prime with limited tooling.</div>
+        <p class="who-body">Your Monday mornings are 90 minutes of manual SAM.gov searching that still doesn't give you confidence you've seen everything relevant.</p>
+        <ul class="who-points">
+          <li>Replace manual search with a ranked, scored feed</li>
+          <li>Catch Sources Sought before competitors respond</li>
+          <li>Show up to capture meetings with a live shortlist</li>
+          <li>Never miss a deadline buried in noise</li>
+        </ul>
+      </div>
+      <div class="who-card reveal reveal-d1">
+        <div class="who-type">Owner / Operator</div>
+        <div class="who-title">Running an 8(a) or SDVOSB and doing BD between everything else.</div>
+        <p class="who-body">You don't have a dedicated capture manager. BD happens when you have time — which means opportunities disappear before you find them.</p>
+        <ul class="who-points">
+          <li>Set-aside status filters opportunities automatically</li>
+          <li>Weekly digest delivers the feed to your inbox</li>
+          <li>Set up once, get signal continuously</li>
+          <li>Priced for a company your size</li>
+        </ul>
+      </div>
+      <div class="who-card reveal reveal-d2">
+        <div class="who-type">BD Consultant</div>
+        <div class="who-title">Managing BD for 8–12 clients, all of it manually.</div>
+        <p class="who-body">You're running the same SAM.gov searches multiple times, maintaining separate spreadsheets per client, context-switching constantly.</p>
+        <ul class="who-points">
+          <li>One dashboard, multiple client profiles</li>
+          <li>Per-client opportunity feeds and digests</li>
+          <li>Flat pricing across all your clients</li>
+          <li>Referral program — bring clients, get rewarded</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section>
+  <div class="section-inner">
+    <div class="section-tag reveal">Early Access</div>
+    <h2 class="section-h2 reveal" style="margin-bottom:40px">What beta users are saying.</h2>
+    <div class="testimonials-grid">
+      <div class="testimonial reveal">
+        <div>
+          <div class="testi-mark">"</div>
+          <p class="testi-quote">I found a $2.1M SDVOSB solicitation on my first day that I would have completely missed. It closed 11 days later. We submitted.</p>
+        </div>
+        <div class="testi-author">Capture Manager · 8(a) IT Services Firm · Washington, DC</div>
+      </div>
+      <div class="testimonial alt reveal reveal-d1">
+        <div>
+          <div class="testi-mark">"</div>
+          <p class="testi-quote">My Monday morning used to be 90 minutes of SAM.gov searching. Now it's 10 minutes reviewing what Field Day already ranked for me.</p>
+        </div>
+        <div class="testi-author">VP Business Development · SDVOSB · $12M Revenue</div>
+      </div>
+      <div class="testimonial reveal reveal-d2">
+        <div>
+          <div class="testi-mark">"</div>
+          <p class="testi-quote">I manage BD for nine clients. Field Day is the first tool that actually makes that workload feel manageable instead of impossible.</p>
+        </div>
+        <div class="testi-author">Independent GovCon BD Consultant · 9 Active Clients</div>
+      </div>
+    </div>
+    <p style="font-family:var(--mono);font-size:10px;color:var(--ink4);margin-top:14px;text-align:center;letter-spacing:.06em">Beta user feedback · names withheld at request</p>
+  </div>
+</section>
+
+<!-- INTELLIGENCE / EDITORIAL -->
+<section id="intelligence" class="intel-section">
+  <div class="section-inner">
+    <div class="intel-header">
+      <div>
+        <div class="section-tag reveal">Field Day Intelligence</div>
+        <h2 class="section-h2 reveal" style="margin-bottom:0">The GovCon brief.</h2>
+      </div>
+      <a href="#" class="intel-see-all reveal">All articles →</a>
+    </div>
+    <div class="intel-grid">
+      <div class="intel-card featured reveal">
+        <div class="intel-category">Defense Market · Analysis</div>
+        <div class="intel-title featured">The $849B opportunity most small primes are too slow to capture</div>
+        <p class="intel-excerpt">The FY2026 defense budget is the largest in American history. But the money doesn't flow to whoever has the best capability — it flows to whoever showed up first. Here's how the procurement timeline actually works, and why small primes keep losing contracts to companies half their size with worse past performance.</p>
+        <a href="#" class="intel-read">Read the brief →</a>
+        <div class="intel-meta"><span>April 2026</span><span>8 min read</span></div>
+      </div>
+      <div class="intel-card reveal reveal-d1">
+        <div class="intel-category">Contracting · Tactics</div>
+        <div class="intel-title">How to respond to a Sources Sought — the move most small primes skip</div>
+        <p class="intel-excerpt">A Sources Sought isn't a contract. It's your chance to shape one. Agencies use them to understand market capability before they write requirements. The companies that respond well influence what gets written. Most small primes don't respond at all.</p>
+        <a href="#" class="intel-read">Read →</a>
+        <div class="intel-meta"><span>March 2026</span><span>5 min read</span></div>
+      </div>
+      <div class="intel-card intel-newsletter reveal reveal-d2">
+        <div>
+          <div class="intel-category">Newsletter</div>
+          <div class="intel-title">Get the weekly brief in your inbox.</div>
+          <p class="intel-excerpt">Procurement signals, expiring contracts worth watching, and one thing you should be doing differently in your BD process — every Monday morning.</p>
+        </div>
+        <div class="intel-form">
+          <input type="email" class="intel-input" placeholder="your@company.com"/>
+          <button class="intel-subscribe">Subscribe →</button>
+          <p class="intel-disclaimer">No spam. Unsubscribe anytime. Read by GovCon professionals across DC.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MARKET CONTEXT TABLE -->
+<section>
+  <div class="section-inner">
+    <div class="section-tag reveal">Market Context</div>
+    <h2 class="section-h2 reveal">The numbers that explain why timing is everything.</h2>
+    <p class="section-body reveal">The federal market rewards positioning over performance. These are the numbers that make the case.</p>
+    <table class="market-table reveal" style="margin-top:36px">
+      <thead>
+        <tr>
+          <th>Signal</th>
+          <th>Number</th>
+          <th>What it means for small primes</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="td-label">Average discovery lag</td>
+          <td class="td-num">48hr</td>
+          <td>By the time most small primes see a solicitation, incumbents have had it for days. Responding Sources Sought is your only way in earlier.</td>
+        </tr>
+        <tr>
+          <td class="td-label">8(a) set-aside market</td>
+          <td class="td-num">$26B+</td>
+          <td>Annual 8(a) contract value. Most of it goes to firms that positioned before the solicitation existed. Your status only helps if you're early.</td>
+        </tr>
+        <tr>
+          <td class="td-label">SAM.gov active vendors</td>
+          <td class="td-num">250K+</td>
+          <td>Every solicitation goes to all of them. The ones that win aren't necessarily the most qualified — they're the ones the contracting officer already knows.</td>
+        </tr>
+        <tr>
+          <td class="td-label">Legacy tool cost</td>
+          <td class="td-num">$600/mo</td>
+          <td>What GovSearch and Deltek charge — built for large primes with dedicated BD staff. Field Day costs less and was designed for companies your size.</td>
+        </tr>
+        <tr>
+          <td class="td-label">DoD FY2026 budget</td>
+          <td class="td-num">$849B</td>
+          <td>The largest defense budget in American history. The money is there. The question is whether you find out about opportunities in time to compete for them.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing">
+  <div class="section-inner">
+    <div class="section-tag reveal">Pricing</div>
+    <h2 class="section-h2 reveal" style="margin-bottom:8px">Start free. Upgrade when it's obvious.</h2>
+    <p class="section-body reveal" style="margin-bottom:40px">The free tier is a real product. Use it, find opportunities you would have missed, then decide. Most people don't take long.</p>
+    <div class="pricing-grid">
+      <div class="pricing-card reveal">
+        <div class="pricing-tier">Starter</div>
+        <div class="pricing-price">$0</div>
+        <div class="pricing-per">Free forever</div>
+        <div class="pricing-divider"></div>
+        <ul class="pricing-features">
+          <li>Live SAM.gov feed — your API key</li>
+          <li>Profile Fit scoring + breakdown</li>
+          <li>Pursuit assessment on every opportunity</li>
+          <li>Up to 10 saved opportunities</li>
+          <li>DoD awards via USASpending</li>
+        </ul>
+        <a href="field-day-app.html?demo=true" class="pricing-cta">See it first — no card required</a>
+      </div>
+      <div class="pricing-card featured reveal reveal-d1">
+        <div class="pricing-tier">Professional</div>
+        <div class="pricing-price" style="color:var(--paper)">$499</div>
+        <div class="pricing-per">per month · cancel anytime</div>
+        <div class="pricing-divider"></div>
+        <ul class="pricing-features">
+          <li>Everything in free, plus:</li>
+          <li>Managed API — no rate limits</li>
+          <li>Unlimited saved opportunities</li>
+          <li>Pipeline tracker — full Kanban board</li>
+          <li>Weekly intelligence digest email</li>
+          <li>Expiring contract alerts</li>
+          <li>Congressional budget signals</li>
+          <li>FPDS incumbent analysis</li>
+        </ul>
+        <a href="#" class="pricing-cta">Start 14-day free trial →</a>
+      </div>
+      <div class="pricing-card reveal reveal-d2">
+        <div class="pricing-tier">Consultant</div>
+        <div class="pricing-price">$799</div>
+        <div class="pricing-per">per month · up to 10 client profiles</div>
+        <div class="pricing-divider"></div>
+        <ul class="pricing-features">
+          <li>Everything in Professional, plus:</li>
+          <li>Multi-client workspace dashboard</li>
+          <li>Per-client feeds and digest emails</li>
+          <li>Client opportunity forwarding</li>
+          <li>Referral revenue share program</li>
+          <li>Priority support and onboarding</li>
+        </ul>
+        <a href="#" class="pricing-cta">Talk to us first</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="cta-inner">
+    <div>
+      <h2 class="cta-h2 reveal">Stop showing up<br>as the <span>opener.</span><br>Start showing up as the closer.</h2>
+      <p class="cta-body reveal reveal-d1">By the time the solicitation drops, the companies that win have already shaped the requirement, built the relationship, and done the research. The demo shows you exactly what that preparation looks like — a fully populated feed, scored opportunities, pursuit assessments already written. See what your Monday morning could look like.</p>
+    </div>
+    <div class="cta-right reveal">
+      <a href="field-day-app.html?demo=true" class="cta-btn">Launch the demo →</a>
+      <span class="cta-note">No account · No credit card · 60 seconds</span>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <span class="footer-logo">Field Day</span>
+    <div class="footer-links">
+      <a href="#" class="footer-link">Privacy</a>
+      <a href="#" class="footer-link">Terms</a>
+      <a href="#" class="footer-link">Contact</a>
+      <a href="#intelligence" class="footer-link">Intelligence</a>
+    </div>
+    <span class="footer-copy">© 2026 Field Day · Washington, DC</span>
+  </div>
+</footer>
+
+<script>
+// Resolve demo link — handles Chrome's download numbering (e.g. field-day-app (25).html)
+// When both files are in the same folder, find the app file automatically
+document.addEventListener('DOMContentLoaded', () => {
+  const demoLinks = document.querySelectorAll('a[href*="field-day-app.html"]');
+  
+  // Try to detect if we're running from a file:// URL with a numbered suffix
+  const currentFile = window.location.pathname;
+  const match = currentFile.match(/^(.+?)(\s*\(\d+\))?\.html$/);
+  
+  if (match && window.location.protocol === 'file:') {
+    // Get the directory path
+    const dir = currentFile.substring(0, currentFile.lastIndexOf('/') + 1);
+    // Build the app URL — try clean name first, browser will 404 if wrong
+    const appUrl = dir + 'field-day-app.html?demo=true';
+    demoLinks.forEach(a => {
+      a.href = appUrl;
+    });
+  }
+});
+</script>
+const reveals = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if(e.isIntersecting){ e.target.classList.add('visible'); observer.unobserve(e.target); }
+  });
+}, {threshold: .1});
+reveals.forEach(el => observer.observe(el));
+
+// Smooth scroll nav links
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    const t = document.querySelector(a.getAttribute('href'));
+    if(t){ e.preventDefault(); t.scrollIntoView({behavior:'smooth', block:'start'}); }
+  });
+});
+</script>
+</body>
+</html>
